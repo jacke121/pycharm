@@ -4,6 +4,22 @@
 import tensorflow as tf
 
 
+# pool max_pool avg_pool
+# tf.nn.max_pool( value=input, ksize=[1, n_size, n_size, 1],
+#                 strides=[1, stride, stride, 1], padding=padding)
+# LRN
+# tf.nn.local_response_normalization(
+#                 pool, depth_radius=7, alpha=0.001, beta=0.75)
+
+# 权重矩阵
+# self.weight = tf.Variable(
+#     initial_value=tf.truncated_normal(
+#         shape=[n_size, n_size, self.input_shape[3], self.n_filter],
+#         mean=0.0, stddev=numpy.sqrt(
+#             2.0 / (self.input_shape[1] * self.input_shape[2] * self.input_shape[3]))),
+#     name='W_%s' % (name))
+
+
 def weight_variable(shape):
     initial = tf.truncated_normal(shape, stddev=0.1)
     return tf.Variable(initial)
@@ -37,14 +53,7 @@ def batchnorm(Ylogits, is_test, iteration, offset, convolutional=False):
     return Ybn, update_moving_averages
 
 
-def no_batchnorm(Ylogits, is_test, iteration, offset, convolutional=False):
-    return Ylogits, tf.no_op()
-
-
 def lrelu(X, leak=0.2):
     f1 = 0.5 * (1 + leak)
     f2 = 0.5 * (1 - leak)
     return f1 * X + f2 * tf.abs(X)
-
-
-

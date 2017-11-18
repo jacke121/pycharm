@@ -7,7 +7,7 @@ import numpy as np
 from collections import Counter
 
 reload(sys)
-sys.setdefaultencoding('utf8')
+sys.setdefaultencoding('utf-8')
 
 root = os.path.abspath(os.path.dirname(os.path.dirname(__file__))) + "/"
 
