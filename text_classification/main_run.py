@@ -27,13 +27,13 @@ sequence_length = len(X_train[0])
 num_classes = len(tag_vocab)
 vocab_size = len(sent_vocab)
 
-embed_size = 100
-filter_sizes = [3, 4, 5]
-num_filters = 128
+print "nb_samples: ",nb_samples
+print "num_classes: ",num_classes
 
 is_training = False
-multi_label_flag = True
+multi_label_flag = False
 
+embed_size = 128
 learning_rate = 0.01
 decay_steps = 1000
 decay_rate = 1.0
@@ -41,7 +41,7 @@ dropout_keep_prob_value = 0.6
 
 clip_gradients = 5.0
 decay_rate_big = 0.50
-l2_lambda = 0.0001
+l2_lambda = 0.001
 
 # add placeholder (X,label)
 input_x = tf.placeholder(tf.int32, [None, sequence_length], name="input_x")  # X
@@ -49,8 +49,26 @@ input_y = tf.placeholder(tf.int32, [None, num_classes], name="input_y")  # y:[No
 dropout_keep_prob = tf.placeholder(tf.float32, name="dropout_keep_prob")
 # global_step = tf.Variable(0, trainable=False, name="Global_Step")
 
+# *********************************************************************************************************
+# fastText
+# logits = cls_model.fastText(input_x, vocab_size, embed_size, num_classes)
+# *********************************************************************************************************
+# textCNN
+filter_sizes = [3, 4, 5]
+num_filters = 128
 logits = cls_model.textCNN(input_x, dropout_keep_prob, sequence_length, vocab_size,
                            embed_size, num_classes, filter_sizes, num_filters)
+# *********************************************************************************************************
+# textRNN
+# hidden_size = 128
+# logits = cls_model.textRNN(input_x, dropout_keep_prob, vocab_size, embed_size, num_classes, hidden_size)
+# *********************************************************************************************************
+# textRCNN
+# hidden_size = 128
+# logits = cls_model.textRCNN(input_x, dropout_keep_prob, batch_size, sequence_length, vocab_size, embed_size,
+#                             num_classes, hidden_size)
+# *********************************************************************************************************
+
 
 if multi_label_flag:
     print("going to use multi label loss.")
@@ -94,7 +112,7 @@ if is_training:
             # test
         loss, acc, predict, lab = sess.run([loss_val, accuracy, predictions, labels],
                                            feed_dict={input_x: X_test, input_y: Y_test,
-                                                      dropout_keep_prob: dropout_keep_prob_value})
+                                                      dropout_keep_prob: 1.0})
 
         print("itr: ", itr, "loss:", avg_loss, "acc:", avg_acc, "val_loss: ", loss, "val_acc", acc)
         print "labels: ", lab
@@ -106,13 +124,13 @@ else:
         saver.restore(sess, ckpt.model_checkpoint_path)
     else:
         pass
-    loss, acc,  predict, lab, = sess.run([loss_val, accuracy,  predictions, labels],
-                                             feed_dict={input_x: X_test, input_y: Y_test,
-                                                        dropout_keep_prob: dropout_keep_prob_value})
+    loss, acc, predict, lab, = sess.run([loss_val, accuracy, predictions, labels],
+                                        feed_dict={input_x: X_test, input_y: Y_test,
+                                                   dropout_keep_prob: 1.0})
     print("val_loss: ", loss, "val_acc", acc)
     print "labels: ", lab
     print "predis: ", predict
-    with open(result_path,'w') as f_w:
+    with open(result_path, 'w') as f_w:
         for sent, tag, pred in zip(X_test, Y_test, predict):
             sent_line = " ".join([sent_idx2word[word] for word in sent])
             tag_t = []
@@ -122,4 +140,4 @@ else:
 
             tag_line = " ".join([tag_idx2word[tta] for tta in tag_t])
             pred_line = tag_idx2word[pred]
-            f_w.write(tag_line+" __pred__ "+pred_line+" __content__ "+sent_line+"\n")
+            f_w.write(tag_line + " __pred__ " + pred_line + " __content__ " + sent_line + "\n")

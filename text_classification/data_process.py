@@ -12,7 +12,7 @@ sys.setdefaultencoding('utf-8')
 root = os.path.abspath(os.path.dirname(os.path.dirname(__file__))) + "/"
 
 
-def create_dataset(in_file):
+def create_dataset(in_file, max_size):
     sent_line, tag_line = [], []
     for line in open(in_file, 'r'):
         sent_tag = line.split("__content__")
@@ -23,7 +23,7 @@ def create_dataset(in_file):
     tag_vocab_dict = Counter(word for sentence in tag_line for word in sentence.split())
 
     sent_vocab_cnt = map(lambda x: (x[0], x[1]), sorted(sent_vocab_dict.items(), key=lambda x: -x[1]))
-    sent_vocab_cnt = filter(lambda x: x[1] >= 5, sent_vocab_cnt)
+    sent_vocab_cnt = filter(lambda x: x[1] >= max_size, sent_vocab_cnt)
     tag_vocab_cnt = map(lambda x: (x[0], x[1]), sorted(tag_vocab_dict.items(), key=lambda x: -x[1]))
 
     sent_vocab = map(lambda x: x[0], sent_vocab_cnt)
@@ -86,10 +86,11 @@ def data_padding(x, y, sent_word2idx, tag_word2idx, length=15):
 
 if __name__ == '__main__':
     length = 20
+    max_size = 0
     train_file = root + "datasets/text/wangke/train.txt"
     test_file = root + "datasets/text/wangke/test.txt"
     X_train, Y_train, sent_word2idx, sent_idx2word, sent_vocab, tag_word2idx, tag_idx2word, tag_vocab = create_dataset(
-        train_file)
+        train_file,max_size=max_size)
     X_test, Y_test = load_data(test_file, sent_word2idx, tag_word2idx)
 
     data_padding(X_train, Y_train, sent_word2idx, tag_word2idx, length=length)
@@ -102,6 +103,9 @@ if __name__ == '__main__':
             if tta:
                 ts.append(i)
         print " ".join([tag_idx2word[ttaS] for ttaS in ts])
+    print "nb_trains: ",len(X_train)
+    print "nb_tests: ",len(X_test)
+    print "nb_classes: ",len(tag_vocab)
     # for key,tag in tag_idx2word.items():
     #     print key,tag
     # for x in X_train:
