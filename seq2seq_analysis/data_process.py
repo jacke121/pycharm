@@ -31,17 +31,17 @@ def create_dataset(in_file):
 
     start_idx = 2
     zh_word2idx = dict([(word, idx + start_idx) for idx, word in enumerate(zh_vocab)])
-    zh_word2idx['<ukn>'] = 0
-    zh_word2idx['<pad>'] = 1
+    zh_word2idx['<pad>'] = 0
+    zh_word2idx['<ukn>'] = 1
 
     zh_idx2word = dict([(idx, word) for word, idx in zh_word2idx.iteritems()])
 
     start_idx = 4
     en_word2idx = dict([(word, idx + start_idx) for idx, word in enumerate(en_vocab)])
-    en_word2idx['<ukn>'] = 0
-    en_word2idx['<go>'] = 1
-    en_word2idx['<eos>'] = 2
-    en_word2idx['<pad>'] = 3
+    en_word2idx['<pad>'] = 0
+    en_word2idx['<ukn>'] = 1
+    en_word2idx['<go>'] = 2
+    en_word2idx['<eos>'] = 3
 
     en_idx2word = dict([(idx, word) for word, idx in en_word2idx.iteritems()])
 
@@ -107,8 +107,8 @@ if __name__ == '__main__':
     X_test = np.asarray(X_test, dtype=np.int)
     Y_test = np.asarray(Y_test, dtype=np.int)
 
-    np.save('pack.npz', np.array([X_train, Y_train, X_test, Y_test,
-                                  zh_word2idx, zh_idx2word, zh_vocab, en_word2idx, en_idx2word, en_vocab]))
+    np.save(root + "datasets/text/spoken_data/pack.npz.npy", np.array([X_train, Y_train, X_test, Y_test,
+                              zh_word2idx, zh_idx2word, zh_vocab, en_word2idx, en_idx2word, en_vocab]))
 
     # for i in range(len(X_train)):
     #     print " ".join([zh_idx2word[index] for index in X_train[i]])
