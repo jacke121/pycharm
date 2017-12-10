@@ -85,8 +85,8 @@ def data_padding(x, y, sent_word2idx, tag_word2idx, length=15):
 
 
 if __name__ == '__main__':
-    length = 20
-    max_size = 0
+    length = 30
+    max_size = 4
     train_file = root + "datasets/text/wangke/train.txt"
     test_file = root + "datasets/text/wangke/test.txt"
     X_train, Y_train, sent_word2idx, sent_idx2word, sent_vocab, tag_word2idx, tag_idx2word, tag_vocab = create_dataset(
@@ -97,15 +97,15 @@ if __name__ == '__main__':
     data_padding(X_test, Y_test, sent_word2idx, tag_word2idx, length=length)
 
     for sent, tag in zip(X_train, Y_train):
-        print " ".join([sent_idx2word[word] for word in sent])
+        print(" ".join([sent_idx2word[word] for word in sent]))
         ts = []
         for i, tta in enumerate(tag):
             if tta:
                 ts.append(i)
-        print " ".join([tag_idx2word[ttaS] for ttaS in ts])
-    print "nb_trains: ",len(X_train)
-    print "nb_tests: ",len(X_test)
-    print "nb_classes: ",len(tag_vocab)
+        print(" ".join([tag_idx2word[ttaS] for ttaS in ts]))
+    print("nb_trains: ",len(X_train))
+    print("nb_tests: ",len(X_test))
+    print("nb_classes: ",len(tag_vocab))
     # for key,tag in tag_idx2word.items():
     #     print key,tag
     # for x in X_train:
